@@ -1,0 +1,138 @@
+
+service integration testing:
+	| - it focuses mainly on the interfaces & flow of data/information between the modules.
+	| - Here priority is to be given for the integrating links rather than the unit functions which are already tested.
+	| - Sample Integration Test Cases for the following scenario: Application has 3 modules say 'Login Page', 'Mailbox' and 'Delete emails' and each of them is integrated logically.
+			Here do not concentrate much on the Login Page testing as it's already been done in Unit Testing. But check how it's linked to the Mail Box Page.
+
+			
+			Test Case ID	Test Case Objective	Test Case Description												Expected Result
+					1		Check the interface link between the Login and Mailbox module							Enter login credentials and click on the Login button To be directed to the Mail Box
+					2		Check the interface link between the Mailbox and Delete Mails Module From Mailbox       select the email and click a delete button Selected email should appear in the Deleted/Trash folder
+					
+					
+					
+					
+					
+					
+	Approaches/Methodologies/Strategies of Integration Testing:
+	Software Engineering defines variety of strategies to execute Integration testing, viz.
+	| - Big Bang Approach :
+		| - Here all component are integrated together at once and then tested.
+	| - Incremental Approach: which is further divided into the following
+			| - In this approach, testing is done by joining two or more modules that are logically related. Then the other related modules are added and tested for the proper functioning. The process continues until all of the
+				modules are joined and tested successfully
+		| - Top Down Approach
+		| - Bottom Up Approach
+		| - Sandwich Approach - Combination of Top Down and Bottom Up
+		
+What is Stub and Driver?
+	| - Incremental Approach is carried out by using dummy programs called Stubs and Drivers. Stubs and Drivers do not implement the entire programming logic of the software module but just simulate data communication with the 	
+		calling module.
+		
+	Stub: Is called by the Module under Test.
+	Driver: Calls the Module to be tested.
+	
+	
+How to do Integration Testing?
+The Integration test procedure irrespective of the Software testing strategies (discussed above):
+
+	1. Prepare the Integration Tests Plan
+	2. Design the Test Scenarios, Cases, and Scripts.
+	3. Executing the test Cases followed by reporting the defects.
+	4. Tracking & re-testing the defects.
+	5. Steps 3 and 4 are repeated until the completion of Integration is successful.
+	
+	
+Spring MVC Integration Tests:
+
+***		we will need a specific ‘application context’ configuration file designed for testing which would just list your beans used for testing. It is merely the same as the normal ‘application context’ file but instead this one is specifically used for testing and to fire up beans in a ‘test context’.
+
+Example 1:
+==========
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/spring/webmvc-config.xml", "contextcontrollertest.xml"})
+public class ContextControllerTest {
+ 
+    @Autowired
+    private RequestMappingHandlerAdapter handlerAdapter;
+ 
+    @Autowired
+    private RequestMappingHandlerMapping handlerMapping;
+     
+  
+ @Test
+ public void testContextController() throws Exception{
+  MockHttpServletRequest httpRequest = new MockHttpServletRequest("POST","/contexts");
+  httpRequest.addParameter("name", "context1");
+   
+  httpRequest.setAttribute(DispatcherServlet.OUTPUT_FLASH_MAP_ATTRIBUTE,new FlashMap());
+  MockHttpServletResponse response = new MockHttpServletResponse();
+  Authentication authentication = new UsernamePasswordAuthenticationToken(new CustomUserDetails(..), null);
+  SecurityContextHolder.getContext().setAuthentication(authentication);
+ 
+  Object handler = this.handlerMapping.getHandler(httpRequest).getHandler();
+  ModelAndView modelAndView = handlerAdapter.handle(httpRequest, response, handler);
+  assertThat(modelAndView.getViewName(), is("redirect:/contexts"));
+ }
+}
+	
+
+
+Example2:
+=========
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+    "file:src/integration-test/resources/META-INF/test-context.xml"
+})
+@WebAppConfiguration
+public class CustomerDetailsControllerIntegrationTest {
+
+    private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Before
+    public void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+
+    @Test
+    public void testGetCustomerDetailsPage() throws Exception {
+        mockMvc.perform(get("/customers/{customerId}", "1"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("custo"))
+            .andExpect(view().name("customers/customerDetails"));
+    }
+}	
+		
+****	@ContextConfiguration defines class-level metadata that is used to determine how to load and configure an ApplicationContext for integration tests.		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
